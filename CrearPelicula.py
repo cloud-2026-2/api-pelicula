@@ -35,9 +35,12 @@ def lambda_handler(event, context):
         # Salida exitosa de la función Lambda
         return {
             'statusCode': 200,
-            'pelicula': pelicula,
-            'response': response
+            'body': json.dumps({
+                'pelicula': pelicula,
+                'response': response
+            })
         }
+
         
     except Exception as e:
         # Capturamos cualquier error (como el KeyError por 'pelicula_patos')
@@ -56,6 +59,9 @@ def lambda_handler(event, context):
         # Salida controlada de la función Lambda para evitar el crash
         return {
             'statusCode': 400,
-            'error': type(e).__name__,
-            'mensaje': f"Datos faltantes o incorrectos en la solicitud: {error_mensaje}"
+            'body': json.dumps({
+                'error': type(e).__name__,
+                'mensaje': f"Datos faltantes o incorrectos: {error_mensaje}"
+            })
         }
+
