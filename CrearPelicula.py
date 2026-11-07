@@ -8,9 +8,13 @@ def lambda_handler(event, context):
     print(json.dumps(event)) 
     
     try:
-        # Intentamos procesar los datos de entrada
-        tenant_id = event['body']['tenant_id']
-        pelicula_datos = event['body']['pelicula_datos']
+        # --- LA CORRECCIÓN CLAVE ---
+        # Con lambda-proxy, event['body'] viene como String plano, hay que convertirlo a diccionario
+        body_data = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
+        
+        # Extraemos los campos desde nuestro nuevo objeto ya parseado
+        tenant_id = body_data['tenant_id']
+        pelicula_datos = body_data['pelicula_datos']
         nombre_tabla = os.environ["TABLE_NAME"]
         
         # Proceso
@@ -41,9 +45,7 @@ def lambda_handler(event, context):
             })
         }
 
-        
     except Exception as e:
-        # Capturamos cualquier error (como el KeyError por 'pelicula_patos')
         error_mensaje = str(e)
         
         # Formato estándar de log para errores ("ERROR")
@@ -64,4 +66,3 @@ def lambda_handler(event, context):
                 'mensaje': f"Datos faltantes o incorrectos: {error_mensaje}"
             })
         }
-
